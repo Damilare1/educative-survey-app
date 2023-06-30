@@ -1,6 +1,7 @@
 <template>
     <NuxtLayout>
     <v-container class="h-100 d-flex flex-column justify-center align-center">
+    {{  $props.error }}
       <h1 class="text-center text-h2 w-75">{{ $props?.error?.statusCode }}</h1>
       <h6 class="text-center text-h4 w-75 mt-5">
         {{ $props?.error?.statusMessage }}

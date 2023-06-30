@@ -1,46 +1,46 @@
 <template>
-  <NuxtLayout>
-    <v-container
-      width="400"
-      class="mx-auto h-full d-flex w-full align-center justify-center"
-      style="height: calc(100%)"
-    >
-      <v-container class="w-50">
-        <form @submit.prevent="submitForm">
-          <v-text-field
-            v-model="state.email"
-            :error-messages="errors.email"
-            label="Email"
-            type="email"
-            required
-          ></v-text-field>
+  <ClientOnly>
+    <NuxtLayout name="authentication">
+      <form @submit.prevent="submitForm">
+        <v-text-field
+          v-model="state.email"
+          :error-messages="errors.email"
+          label="Email"
+          type="email"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="state.password"
-            :error-messages="errors.password"
-            label="Password"
-            type="password"
-            required
-          ></v-text-field>
-          <v-row class="ma-0 align-center justify-between">
-            <v-btn class="me-4" type="submit">Login</v-btn>
-            <NuxtLink to="/signup">Sign up</NuxtLink>
-          </v-row>
-        </form>
-        <v-alert
-          class="mt-4"
-          v-if="isSuccess || isFailure"
-          :type="isSuccess ? 'success' : 'error'"
-          :title="isSuccess ? 'Login Successful' : 'Login Failed'"
-        ></v-alert>
-      </v-container>
-    </v-container>
-  </NuxtLayout>
+        <v-text-field
+          v-model="state.password"
+          :error-messages="errors.password"
+          label="Password"
+          type="password"
+          required
+        ></v-text-field>
+        <v-row class="ma-0 align-center justify-between">
+          <v-btn class="me-4" type="submit">Login</v-btn>
+          <NuxtLink to="/signup">Sign up</NuxtLink>
+        </v-row>
+      </form>
+      <v-alert
+        class="mt-4"
+        v-if="isSuccess || isFailure"
+        :type="isSuccess ? 'success' : 'error'"
+        :title="isSuccess ? 'Login Successful' : 'Login Failed'"
+      ></v-alert>
+    </NuxtLayout>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { object, string } from 'yup'
+
+// eslint-disable-next-line no-undef
+definePageMeta({
+  middleware: 'auth-routes-guard'
+})
+
 const initialState = { email: '', password: '' }
 const state = reactive({ ...initialState })
 const errors = reactive({ ...initialState })
@@ -77,10 +77,11 @@ const validate = async (values) => {
   return true
 }
 
+const { $login } = useNuxtApp()
+
 const submitForm = async () => {
   isFailure.value = false
-  if (!await validate(state)) return
-  const { $login } = useNuxtApp()
+  if (!(await validate(state))) return
   const { isError, data } = await $login(state.email, state.password)
   if (isError) {
     if (data) Object.assign(errors, data)
@@ -91,6 +92,5 @@ const submitForm = async () => {
   isSuccess.value = true
   router.push('/admin')
 }
-
 </script>
 <style scoped></style>

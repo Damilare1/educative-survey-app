@@ -1,6 +1,13 @@
 export default defineEventHandler(async (event) => {
-  const headers: any = getHeaders(event) ?? {}
-  const { id } = event.context.params as any
-  const response: any = await $fetch(`http://localhost:8003/api/surveys/${id as number}/questions`, { method: 'GET', headers: { ...headers } })
-  return { ...response }
+  try {
+    const { id } = event.context.params as any
+    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id as number}/questions`)
+    return response
+  } catch (e) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Internal server error',
+      data: e.data?.message ?? null
+    })
+  }
 })

@@ -4,9 +4,8 @@
     </NuxtLayout>
 </template>
 <script setup>
+// eslint-disable-next-line no-undef
 definePageMeta({
-  middleware: [
-    'authentication'
-  ]
+  middleware: 'admin-routes-guard'
 })
 </script>

@@ -4,24 +4,28 @@ interface IAuthResponse {
   error: string | null
 }
 
-const JWT_TOKEN = 'survey_jwt'
+const JWT_LS_TOKEN = 'survey_jwt'
 export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
       getToken: (): string | null => {
-        return localStorage.getItem(JWT_TOKEN)
+        return localStorage.getItem(JWT_LS_TOKEN)
       },
-      login: async function (email: string, password: string): Promise<IAuthResponse> {
+      login: async function (
+        email: string,
+        password: string
+      ): Promise<IAuthResponse> {
         const response = await useFetch('/api/auth/login', {
           body: {
-            email, password
+            email,
+            password
           },
           method: 'POST'
         })
         const error = toRaw(response.error?.value) ?? null
         if (error === null) {
           const data = response.data.value
-          localStorage.setItem(JWT_TOKEN, data.token)
+          localStorage.setItem(JWT_LS_TOKEN, data.token)
           return {
             isError: false,
             data,
@@ -43,12 +47,18 @@ export default defineNuxtPlugin((nuxtApp) => {
         return errorResponse
       },
       logout: function (): void {
-        localStorage.removeItem(JWT_TOKEN)
+        localStorage.removeItem(JWT_LS_TOKEN)
       },
-      signup: async (email: string, username: string, password: string): Promise<IAuthResponse> => {
+      signup: async (
+        email: string,
+        username: string,
+        password: string
+      ): Promise<IAuthResponse> => {
         const response = await useFetch('/api/auth/signup', {
           body: {
-            email, username, password
+            email,
+            username,
+            password
           },
           method: 'POST'
         })
@@ -75,7 +85,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         return errorResponse
       },
       userIsLoggedIn: async (): Promise<IAuthResponse> => {
-        const response = await useAuthFetch('/api/auth/isLoggedIn');
+        const response = await useAuthFetch('/api/auth/isLoggedIn')
         const error = toRaw(response.error?.value) ?? null
         if (error === null) {
           const data = response.data.value
@@ -85,7 +95,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             error: null
           }
         }
-        localStorage.removeItem(JWT_TOKEN)
+        localStorage.removeItem(JWT_LS_TOKEN)
         return {
           isError: true,
           data: error,

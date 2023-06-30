@@ -1,5 +1,7 @@
-export default defineEventHandler(() => {
+export default defineEventHandler(async (event) => {
+  const queryParams = getQuery(event)
   return {
-    message: 'Hello'
+    message: 'Hello',
+    query: queryParams
   }
 })

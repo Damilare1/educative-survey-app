@@ -1,48 +1,42 @@
 <template>
-  <NuxtLayout>
-    <v-container
-      width="400"
-      class="mx-auto h-full d-flex w-full align-center justify-center"
-      style="height: calc(100%)"
-    >
-      <v-container class="w-50">
-        <form @submit.prevent="submitForm">
-          <v-text-field
-            v-model="state.email"
-            :error-messages="errors.email"
-            label="Email"
-            type="email"
-            required
-          ></v-text-field>
-          <v-text-field
-            v-model="state.username"
-            :error-messages="errors.username"
-            label="Username"
-            type="text"
-            required
-          ></v-text-field>
+  <ClientOnly>
+    <NuxtLayout name="authentication">
+      <form @submit.prevent="submitForm">
+        <v-text-field
+          v-model="state.email"
+          :error-messages="errors.email"
+          label="Email"
+          type="email"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="state.username"
+          :error-messages="errors.username"
+          label="Username"
+          type="text"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="state.password"
-            :error-messages="errors.password"
-            label="Password"
-            type="password"
-            required
-          ></v-text-field>
-          <v-row class="ma-0 align-center justify-between">
-            <v-btn class="me-4" type="submit">Sign up</v-btn>
-            <NuxtLink to="/login">Login</NuxtLink>
-          </v-row>
-        </form>
-        <v-alert
-          class="mt-4"
-          v-if="isSuccess || isFailure"
-          :type="isSuccess ? 'success' : 'error'"
-          :title="isSuccess ? 'Signup Successful' : serverErrorText"
-        ></v-alert>
-      </v-container>
-    </v-container>
-  </NuxtLayout>
+        <v-text-field
+          v-model="state.password"
+          :error-messages="errors.password"
+          label="Password"
+          type="password"
+          required
+        ></v-text-field>
+        <v-row class="ma-0 align-center justify-between">
+          <v-btn class="me-4" type="submit">Sign up</v-btn>
+          <NuxtLink to="/login">Login</NuxtLink>
+        </v-row>
+      </form>
+      <v-alert
+        class="mt-4"
+        v-if="isSuccess || isFailure"
+        :type="isSuccess ? 'success' : 'error'"
+        :title="isSuccess ? 'Signup Successful' : serverErrorText"
+      ></v-alert>
+    </NuxtLayout>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
@@ -56,6 +50,12 @@ const isFailure = ref(false)
 const serverErrorText = ref('')
 const router = useRouter()
 const { $signup } = useNuxtApp()
+
+// eslint-disable-next-line no-undef
+definePageMeta({
+  middleware: ['auth-routes-guard']
+})
+
 const resetErrors = () => {
   Object.assign(errors, initialState)
 }

@@ -19,7 +19,7 @@
             >
           </v-col>
           <v-col md="7"></v-col>
-          <v-col md="2" cols="5">
+          <v-col md="2" cols="3">
             <v-btn class="pa-2" width="100%" size="large" to="/admin" flat
               >Admin</v-btn
             >
@@ -40,7 +40,5 @@
     <ModalContainer />
   </v-app>
 </template>
-<script lang="ts" setup>
-
-</script>
+<script lang="ts" setup></script>
 <style scoped></style>

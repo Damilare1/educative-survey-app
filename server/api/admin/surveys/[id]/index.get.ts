@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 export default defineEventHandler(async (event) => {
+  const { id } = event.context.params as any
+
   const authorization = getHeader(event, 'authorization') ?? ''
 
   if (!authorization) {
@@ -10,10 +13,8 @@ export default defineEventHandler(async (event) => {
       }
     }
   }
-
   try {
-    const { id } = event.context.params as any
-    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id as number}/responses`, {
+    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id}`, {
       method: 'GET',
       headers: {
         authorization

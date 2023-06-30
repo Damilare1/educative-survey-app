@@ -23,8 +23,7 @@ const route = useRoute()
 // eslint-disable-next-line no-undef
 const { $getSurvey } = useNuxtApp()
 const { id } = route.params
-const survey: any = await $getSurvey(id)
-console.log(survey)
+const survey = await $getSurvey(id)
 // eslint-disable-next-line no-undef
 useServerSeoMeta({
   title: `Survey Application - ${survey.survey_name}`,

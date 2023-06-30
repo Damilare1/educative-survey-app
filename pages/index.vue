@@ -8,13 +8,14 @@
       </h4>
       <v-container class="w-50 mt-5">
         <v-row justify="space-around">
-        <ClientOnly fallback-tag="p" fallback="Loading Buttons">
-          <v-btn to="/admin">Create a Survey</v-btn>
-          <v-btn to="/surveys">Take a Survey</v-btn>
-        </ClientOnly>
+          <ClientOnly fallback-tag="p" fallback="Loading Buttons">
+            <v-btn to="/admin">Create a Survey</v-btn>
+            <v-btn to="/surveys">Take a Survey</v-btn>
+          </ClientOnly>
         </v-row>
       </v-container>
     </v-container>
   </NuxtLayout>
 </template>
-<script setup></script>
+<script setup>
+</script>
