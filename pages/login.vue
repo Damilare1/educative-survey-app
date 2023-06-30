@@ -47,6 +47,7 @@ const errors = reactive({ ...initialState })
 const isSuccess = ref(false)
 const isFailure = ref(false)
 const router = useRouter()
+const { $login } = useNuxtApp()
 
 const resetErrors = () => {
   Object.assign(errors, initialState)
@@ -69,22 +70,21 @@ const validate = async (values) => {
     resetErrors()
   } catch (error) {
     // Validation errors occurred
-    error.inner.forEach((err) => {
-      errors[err.path] = err.message
+    error.inner.forEach((validationError) => {
+      errors[validationError.path] = validationError.message
     })
     return false
   }
   return true
 }
 
-const { $login } = useNuxtApp()
-
 const submitForm = async () => {
   isFailure.value = false
   if (!(await validate(state))) return
-  const { isError, data } = await $login(state.email, state.password)
-  if (isError) {
-    if (data) Object.assign(errors, data)
+  const { error, data, pending } = await $login(state.email, state.password)
+
+  if (!pending.value && error.value) {
+    if (data.value) Object.assign(errors, data)
     isSuccess.value = false
     isFailure.value = true
     return

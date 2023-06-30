@@ -92,11 +92,11 @@ const validate = async (values) => {
 const submitForm = async () => {
   isFailure.value = false
   if (!(await validate(state))) return
-  const response = await $signup(state.email, state.username, state.password)
+  const { error, data, pending } = await $signup(state.email, state.username, state.password)
 
-  if (response.isError && response.error) {
-    serverErrorText.value = response.error
-    if (response.data) Object.assign(errors, response.data)
+  if (!pending.value && error.value) {
+    serverErrorText.value = error.value
+    if (data.value) Object.assign(errors, data.value)
     isSuccess.value = false
     isFailure.value = true
     return

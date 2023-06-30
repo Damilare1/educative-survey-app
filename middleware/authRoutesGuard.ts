@@ -1,9 +1,9 @@
 export default defineNuxtRouteMiddleware(async (from, to) => {
   if (process.client) {
     const { $userIsLoggedIn } = useNuxtApp()
-    const { isError } = await $userIsLoggedIn()
+    const { pending, error } = await $userIsLoggedIn()
 
-    if (!isError) {
+    if (!pending.value && !error.value) {
       return await navigateTo('/')
     }
   }
