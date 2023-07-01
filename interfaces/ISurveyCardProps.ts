@@ -1,6 +1,6 @@
 export interface ISurveyCardProps {
+  description: string
   title: string
-  a: string
   id: number
   isAdmin?: boolean
   author: string

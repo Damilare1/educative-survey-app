@@ -10,6 +10,8 @@
           v-model="title"
           label="Title"
           type="text"
+          required
+          aria-required="true"
         ></v-text-field>
         <v-card-actions>
           <v-row class="ma-0 align-center justify-space-between">
@@ -26,10 +28,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useModals } from '~/composables/useModals'
-const modalCtrl = useModals()
+
+const { data: { payload: { text, action } }, toggleDialog } = useModals()
 const emit = defineEmits(['closeDialog'])
-const title = ref(modalCtrl.data.payload.text)
-const submitForm = () => {
+const title = ref(text)
+const submitForm = async () => {
   if (!title.value) { emit('closeDialog') }
+  if (action)action(title.value)
+  else toggleDialog()
 }
 </script>

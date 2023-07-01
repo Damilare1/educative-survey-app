@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     survey_name: z.string().optional(),
     survey_description: z.string().optional(),
     is_active: z.boolean().optional()
-  })
+  }).strict()
   try {
     const body = surveyParameters.parse(await readBody(event))
     const response: any = await $fetch(`http://localhost:8004/api/surveys/${id}`, {

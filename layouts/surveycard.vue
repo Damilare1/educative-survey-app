@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <v-card class="survey-field pa-6 mb-4 w-75 ma-auto">
+    <v-row class="survey-field pa-6 mb-4 w-100 d-flex flex-wrap ma-auto">
       <slot />
-    </v-card>
+    </v-row>
   </v-container>
 </template>
 

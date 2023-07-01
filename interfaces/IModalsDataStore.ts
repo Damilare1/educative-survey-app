@@ -7,7 +7,7 @@ export interface IDialogDataStore {
 
 export interface IPayloadDataStore {
   message?: string
-  action?: () => void
+  action?: (data?: any) => void
   text?: string
   id?: number | string
 }

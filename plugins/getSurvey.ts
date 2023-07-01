@@ -1,13 +1,25 @@
 export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
-      getSurvey: async (id: string) => {
-        const response = await useFetch(`/api/survey/${id}/questions`)
-        return toRaw(response.data.value)
+      getSurvey: async (id: number) => {
+        return await useAuthFetch(`/api/survey/${id}/questions`)
       },
-      getSurveyDetails: async (id: string) => {
-        const response = await useFetch(`/api/survey/${id}`)
-        return toRaw(response.data.value)
+      getAdminSurveys: async () => {
+        return await useAuthFetch('/api/admin/surveys')
+      },
+      getSurveyDetails: async (id: number) => {
+        return await useAuthFetch(`/api/survey/${id}`)
+      },
+      deleteSurvey: async (id: number) => {
+        return await useAuthFetch(`/api/admin/surveys/${id}`, {
+          method: 'DELETE'
+        })
+      },
+      updateSurvey: async (id: number, body: any) => {
+        return await useAuthFetch(`/api/admin/surveys/${id}`, {
+          method: 'PUT',
+          body
+        })
       }
     }
   }

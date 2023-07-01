@@ -1,5 +1,8 @@
+// Setting to ClientOnly to ensure token is being read from localstorage
 <template>
-    <div>
-    List of surveys by Admin goes here
-    </div>
+  <ClientOnly>
+    <AdminComponents />
+  </ClientOnly>
 </template>
+<script setup>
+</script>

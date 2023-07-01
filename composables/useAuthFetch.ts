@@ -6,6 +6,9 @@ export const useAuthFetch = async (
   const headers = options.headers ?? {}
   headers.authorization = $getToken()
   options.headers = headers
+  // don't load on the server because of the token saved in local storage
+  options.server = false
+  options.lazy = true
 
   return await useFetch(path, options)
 }
