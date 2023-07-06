@@ -14,7 +14,9 @@ export default defineEventHandler(async (event) => {
     }
   }
   try {
-    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id}`, {
+    const config = useRuntimeConfig()
+    const response: any = await $fetch(`/surveys/admin/${id}`, {
+      baseURL: config.surveyApiUrl,
       method: 'GET',
       headers: {
         authorization
@@ -23,8 +25,8 @@ export default defineEventHandler(async (event) => {
     return response
   } catch (e) {
     throw createError({
-      statusCode: 500,
-      statusMessage: 'Internal server error',
+      statusCode: e.statusCode ?? 500,
+      statusMessage: e.statusMessage ?? 'Internal server error',
       data: e.data?.message ?? null
     })
   }

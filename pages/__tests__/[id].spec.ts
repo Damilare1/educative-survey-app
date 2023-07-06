@@ -15,9 +15,9 @@ describe('Survey form page tests', async () => {
     expect(status).toBe(200)
   })
 
-//   test('Page component renders', async() => {
+  //   test('Page component renders', async() => {
 
-//   })
+  //   })
 
   //   test('check that 1 = 1', async () => {
   //     expect(1).toEqual(1)

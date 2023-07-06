@@ -4,7 +4,7 @@ export const useAuthFetch = async (
 ): Promise<any> => {
   const { $getToken } = useNuxtApp()
   const headers = options.headers ?? {}
-  headers.authorization = $getToken()
+  headers.authorization = $getToken() ?? ''
   options.headers = headers
   // don't load on the server because of the token saved in local storage
   options.server = false

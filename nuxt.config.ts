@@ -65,5 +65,8 @@ export default defineNuxtConfig({
   devServer: {
     host: '0.0.0.0',
     port: 8080
+  },
+  runtimeConfig: {
+    surveyApiUrl: process.env.SURVEY_API_URL
   }
 })

@@ -4,4 +4,5 @@ import { type IOptions } from './IOptionTypes'
 export interface IMultipleChoiceOptionPreview {
   optionType: QuestionOptionsEnum
   options: IOptions[]
+  questionIndex: number
 }

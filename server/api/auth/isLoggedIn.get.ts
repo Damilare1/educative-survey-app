@@ -11,7 +11,9 @@ export default defineEventHandler(async (event) => {
     })
   }
   try {
-    const user = await $fetch('http://localhost:8004/api/admin/me', {
+    const config = useRuntimeConfig()
+    const user = await $fetch('/admin/me', {
+      baseURL: config.surveyApiUrl,
       method: 'GET',
       headers: {
         authorization

@@ -11,30 +11,13 @@ export default defineEventHandler(async (event) => {
       }
     }
   }
-  const surveyParameters = z.object({
-    survey_name: z.string(),
-    survey_description: z.string(),
-    is_active: z.boolean().optional(),
-    start_date: z.string().optional().nullable(),
-    end_date: z.string().optional().nullable(),
-    questions: z
-      .object({
-        question: z.string().optional(),
-        input_type_id: z.number().optional(),
-        options: z
-          .object({
-            label: z.string().optional()
-          })
-          .array()
-          .optional()
-      })
-      .array()
-      .optional()
+  const questionIDParameters = z.object({
+    ids: z.number().array()
   }).strict()
   try {
-    const body = surveyParameters.parse(await readBody(event))
+    const body = questionIDParameters.parse(await readBody(event))
     const config = useRuntimeConfig()
-    const survey = await $fetch('/surveys/create', {
+    const survey = await $fetch('/survey_questions', {
       baseURL: config.surveyApiUrl,
       method: 'POST',
       body,

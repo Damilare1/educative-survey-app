@@ -1,18 +1,19 @@
 <template>
     <v-text-field
       class="option-text-field"
-      v-for="(option, i) in optionArray"
+      v-for="(option, i) in props.options"
       @input="handleOptionTextUpdate($event, i)"
       :model-value="option.label"
       :prepend-icon="selectedOptionIcon"
       append-icon="mdi-close"
       @click:append="handleRemoveOption(i)"
+      :key="`survey_question_${questionIndex}_option_${i}`"
     ></v-text-field>
     <v-btn @click="addNewOption">Add Option</v-btn>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 import { QuestionOptionsEnum } from "~/enums/QuestionOptions.enums";
 import { IMultipleChoiceOptionPreview } from "~/interfaces/IMultipleChoiceOptionPreview";
 const icons = {
@@ -21,7 +22,6 @@ const icons = {
 };
 
 const props = defineProps<IMultipleChoiceOptionPreview>();
-const optionArray = reactive(props.options);
 
 const selectedOptionIcon = computed(() => {
   return icons[props.optionType];
@@ -32,18 +32,17 @@ const handleOptionTextUpdate = (
   index: number
 ) => {
   const { value } = event.target;
-  optionArray[index].label = value;
+  props.options[index].label = value;
 };
 
 const addNewOption = () => {
-  optionArray.push({
-    label: `Option ${optionArray.length + 1}`,
-    id: optionArray.length + 1,
+  props.options.push({
+    label: `Option ${props.options.length + 1}`
   });
 };
 
 const handleRemoveOption = (index: number) => {
-  optionArray.splice(index, 1);
+  props.options.splice(index, 1);
 };
 </script>
 

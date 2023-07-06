@@ -14,7 +14,9 @@ export default defineEventHandler(async (event) => {
     }
   }
   try {
-    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id}`, {
+    const config = useRuntimeConfig()
+    const response: any = await $fetch(`/surveys/${id}`, {
+      baseURL: config.surveyApiUrl,
       method: 'DELETE',
       headers: {
         authorization

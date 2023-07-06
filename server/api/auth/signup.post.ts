@@ -3,13 +3,20 @@ export default defineEventHandler(async (event) => {
   const loginParameters = z
     .object({
       email: z.string().email(),
-      password: z.string().min(8, { message: 'Password must contain at least 8 characters' }),
+      password: z
+        .string()
+        .min(8, { message: 'Password must contain at least 8 characters' }),
       username: z.string()
     })
     .strict()
   try {
     const body = loginParameters.parse(await readBody(event))
-    const user = await $fetch('http://localhost:8004/api/admin/signup', { method: 'POST', body })
+    const config = useRuntimeConfig()
+    const user = await $fetch('/admin/signup', {
+      baseURL: config.surveyApiUrl,
+      method: 'POST',
+      body
+    })
     return user
   } catch (e) {
     const error = {

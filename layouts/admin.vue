@@ -8,7 +8,8 @@
               active-class="bg-grey-darken-3"
               prepend-icon="mdi-folder-plus-outline"
               title="My Surveys"
-              to="/admin/surveys"
+              to="/admin/"
+              exact
             ></v-list-item>
             <v-list-item
               active-class="bg-grey-darken-3"

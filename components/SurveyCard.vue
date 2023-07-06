@@ -78,14 +78,26 @@ const items: ISurveyCardMenu[] = [
   {
     label: "Rename",
     isAdminAction: true,
-    isLink: false,
     action: handleRenameButtonClick,
   },
   {
     label: "Delete",
     isAdminAction: true,
-    isLink: false,
     action: handleDeleteButtonClick,
+  },
+  {
+    label: "Edit",
+    isAdminAction: true,
+    action: () => {
+      navigateTo(`/admin/surveys/${props.id}`)
+    },
+  },
+  {
+    label: "View Responses",
+    isAdminAction: true,
+    action: () => {
+      navigateTo(`/admin/surveys/${props.id}/responses`)
+    },
   },
 ];
 

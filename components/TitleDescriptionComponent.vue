@@ -1,20 +1,20 @@
 <template>
   <NuxtLayout name="surveycard">
     <v-container>
-      <template v-if="isAdmin">
+      <template v-if="isAdmin && !preview">
         <v-text-field
           :model-value="title"
           class="mb-6"
           label="Survey Title"
           variant="outlined"
-          @input="($event)=>$emit('updateTitle', $event.target.value)"
+          @input="($event: any)=>$emit('update:title', $event.target.value)"
         />
         <v-textarea
           name="input-7-1"
           variant="outlined"
           label="Survey Description"
           :counter="260"
-          @input="($event)=>$emit('updateDescription', $event.target.value)"
+          @input="($event: any)=>$emit('update:description', $event.target.value)"
           :model-value="description"
         />
       </template>
@@ -31,9 +31,10 @@ interface ITitleProps {
   title: string;
   description: string;
   isAdmin: boolean;
+  preview: boolean;
 }
 
-defineEmits(['updateTitle', 'updateDescription'])
+defineEmits(['update:title', 'update:description'])
 
 defineProps<ITitleProps>()
 </script>

@@ -20,9 +20,30 @@
           </v-col>
           <v-col md="7"></v-col>
           <v-col md="2" cols="3">
-            <v-btn class="pa-2" width="100%" size="large" to="/admin" flat
-              >Admin</v-btn
-            >
+          <template v-if="user">
+            <v-btn id="menu-activator" class="pa-2" width="100%" size="large" flat>
+              Admin
+            </v-btn>
+
+            <v-menu activator="#menu-activator">
+              <v-list>
+                <v-list-item>
+                  <v-btn to="/admin/surveys/create" exact>New Survey</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn to="/admin" exact>My Surveys</v-btn>
+                </v-list-item>
+                <v-list-item>
+                  <v-btn @click="logout">Logout</v-btn>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+          <template v-else>
+            <v-btn to="/login" class="pa-2" width="100%" size="large" flat>
+              Login
+            </v-btn>
+          </template>
           </v-col>
         </v-row>
       </v-container>
@@ -40,5 +61,21 @@
     <ModalContainer />
   </v-app>
 </template>
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { ref, watchEffect } from 'vue'
+const { $userIsLoggedIn, $logout } = useNuxtApp()
+const { error, pending, data } = await $userIsLoggedIn()
+const user = ref(null)
+watchEffect(() => {
+  if (!pending.value && !error.value) {
+    user.value = data.value
+  }
+})
+
+const logout = async () => {
+  await $logout()
+  user.value = null
+  navigateTo('/')
+}
+</script>
 <style scoped></style>

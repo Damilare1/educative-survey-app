@@ -17,14 +17,38 @@ export default defineEventHandler(async (event) => {
   }
 
   const surveyParameters = z.object({
-    id: z.number().optional(),
+    id: z.string().optional(),
     survey_name: z.string().optional(),
     survey_description: z.string().optional(),
-    is_active: z.boolean().optional()
+    is_active: z.boolean().optional(),
+    start_date: z.string().optional().nullable(),
+    end_date: z.string().optional().nullable(),
+    admin_id: z.string().optional(),
+    questions: z
+      .object({
+        id: z.string().optional(),
+        question: z.string().optional(),
+        input_type_id: z.number().optional(),
+        admin_id: z.string().optional(),
+        survey_id: z.string().optional(),
+        options: z
+          .object({
+            id: z.string().optional(),
+            label: z.string().optional(),
+            question_id: z.string().optional(),
+            admin_id: z.string().optional()
+          })
+          .array()
+          .optional()
+      })
+      .array()
+      .optional()
   }).strict()
   try {
     const body = surveyParameters.parse(await readBody(event))
-    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id}`, {
+    const config = useRuntimeConfig()
+    const response: any = await $fetch(`/surveys/${id}`, {
+      baseURL: config.surveyApiUrl,
       method: 'PUT',
       body,
       headers: {

@@ -2,7 +2,14 @@
 export default defineEventHandler(async (event) => {
   try {
     const { id } = event.context.params as any
-    const response: any = await $fetch(`http://localhost:8004/api/surveys/${id as number}`, { method: 'GET' })
+    const config = useRuntimeConfig()
+    const response: any = await $fetch(
+      `/surveys/${id}`,
+      {
+        baseURL: config.surveyApiUrl,
+        method: 'GET'
+      }
+    )
     return response
   } catch (e) {
     throw createError({

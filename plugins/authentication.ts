@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 
+import { type AsyncData } from 'nuxt/app'
+
 const JWT_LS_TOKEN = 'survey_jwt'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -8,11 +10,22 @@ export default defineNuxtPlugin((nuxtApp) => {
       getToken: (): string | null => {
         return nuxtApp.$getItemFromLocalStorage(JWT_LS_TOKEN)
       },
+      authFetch: async (path: string, options: any): Promise<AsyncData<any, Error | null>> => {
+        const { $getToken } = nuxtApp
+        const headers = options.headers ?? {}
+        headers.authorization = $getToken() ?? ''
+        options.headers = headers
+        // don't load on the server because of the token saved in local storage
+        options.server = false
+        options.lazy = true
+
+        return await useFetch(path, options)
+      },
       login: async function (
         email: string,
         password: string
-      ): Promise<any> {
-        return await useAuthFetch('/api/auth/login', {
+      ): Promise<AsyncData<any, Error | null>> {
+        return await useFetch('/api/auth/login', {
           body: {
             email,
             password
@@ -33,8 +46,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         email: string,
         username: string,
         password: string
-      ): Promise<any> => {
-        return await useAuthFetch('/api/auth/signup', {
+      ): Promise<AsyncData<any, Error | null>> => {
+        return await useFetch('/api/auth/signup', {
           body: {
             email,
             username,
@@ -43,12 +56,13 @@ export default defineNuxtPlugin((nuxtApp) => {
           method: 'POST'
         })
       },
-      userIsLoggedIn: async (): Promise<any> => {
-        return await useAuthFetch('/api/auth/isLoggedIn', {
+      userIsLoggedIn: () => {
+        const { $authFetch, $deleteItemFromLocalStorage } = nuxtApp
+        return $authFetch('/api/auth/isLoggedIn', {
           onResponseError ({ response: { status } }) {
             // if token no longer valid, delete from local storage
             if (status === 403) {
-              nuxtApp.$deleteItemFromLocalStorage(JWT_LS_TOKEN)
+              $deleteItemFromLocalStorage(JWT_LS_TOKEN)
             }
           }
         })
