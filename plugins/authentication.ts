@@ -7,7 +7,11 @@ const JWT_LS_TOKEN = 'survey_jwt'
 export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
-      getToken: (): string | null => {
+      getToken: (): string | null | undefined => {
+        if (process.server) {
+          const token = useCookie('authToken')
+          return token.value
+        }
         return nuxtApp.$getItemFromLocalStorage(JWT_LS_TOKEN)
       },
       authFetch: async (path: string, options: any): Promise<AsyncData<any, Error | null>> => {
@@ -34,6 +38,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           onResponse: ({ response }) => {
             const data = response._data
             if (data.token) {
+              const token = useCookie('authToken')
+              token.value = data.token
               nuxtApp.$setItemInLocalStorage(JWT_LS_TOKEN, data.token)
             }
           }
@@ -62,6 +68,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           onResponseError ({ response: { status } }) {
             // if token no longer valid, delete from local storage
             if (status === 403) {
+              const token = useCookie('authToken')
+              token.value = null
               $deleteItemFromLocalStorage(JWT_LS_TOKEN)
             }
           }
