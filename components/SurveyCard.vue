@@ -47,7 +47,7 @@ import { useModals } from "../composables/useModals";
 import { ModalsEnum } from "../enums/Modals.enums";
 
 const modalCtrl = useModals();
-const emit = defineEmits(["handleDelete", "handleUpdateTitle"]);
+const emit = defineEmits(["handleDelete", "update:title"]);
 const props = defineProps<ISurveyCardProps>();
 
 const handleRenameButtonClick = () => {
@@ -56,7 +56,7 @@ const handleRenameButtonClick = () => {
     text: props.title,
     id: props.id,
     action: (title) => {
-      emit("handleUpdateTitle", props.id, title);
+      emit("update:title", props.id, title);
     },
   });
   modalCtrl.toggleDialog();

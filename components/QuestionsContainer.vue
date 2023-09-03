@@ -2,33 +2,24 @@
   <v-container>
     <SurveyConfigDetails
       :is-admin="!!isAdmin"
-      :is-active="!!survey.is_active"
       :preview="!!preview"
-      @update:is-active="handleConfigChange"
+      v-model:is-active="survey.is_active"
     />
     <TitleDescriptionComponent
-      :title="survey.survey_name"
-      :description="survey.survey_description"
+      v-model:title="survey.survey_name"
+      v-model:description="survey.survey_description"
       :is-admin="!!isAdmin"
       :preview="!!preview"
-      @update:title="handleTitleChange"
-      @update:description="handleDescriptionChange"
     />
     <QuestionComponent
-      v-for="(question, i) in survey.questions"
+      v-for="(question, i) in questions"
       :inputOptionTypes="inputTypes"
-      :question="question"
       :preview="!!preview"
       :is-admin="!!isAdmin"
+      v-model:response="questions[i].response.option_id"
+      v-model:question="questions[i]"
       @delete-question="handleRemoveQuestion(i)"
-      @update:question="(question) => handleUpdateQuestion(i, question)"
-      @update:responses="
-        (value) =>
-          $emit('update:response', {
-            [question.id ?? `survey_question_${i}`]: value,
-          })
-      "
-      :key="question.id ?? `survey_question_${i}`"
+      :key="question?.id ?? `survey_question_${i}`"
       :index="i"
     />
   </v-container>
@@ -49,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { UnwrapNestedRefs } from "vue";
+import { UnwrapNestedRefs, ref } from "vue";
 import { IQuestion } from "../interfaces/IQuestionOptionProps";
 import { ISurvey } from "../interfaces/ISurvey";
 
@@ -58,38 +49,46 @@ interface IProps {
   preview?: boolean;
   survey: UnwrapNestedRefs<ISurvey>;
   inputTypes: any[];
+  survey_id?: string;
 }
 const props = defineProps<IProps>();
-defineEmits(["update:response"]);
+const emit = defineEmits(["update:responses", "update:question"]);
 
+const questions: any = reactive([]);
+
+watchEffect(() => {
+  const updatedQuestion = props.survey.questions.map((question) => {
+    question.response = {
+      question_id: question.id,
+      survey_id: props.survey.id,
+      option_id: "",
+    };
+
+    return question;
+  });
+  Object.assign(questions, updatedQuestion);
+});
 const handleAddButtonClick = () => {
   const initial: IQuestion = {
     question: "Untitled Question",
     input_type_id: props.inputTypes[0].id,
-    options: [{ label: "Option 1" }],
+    options: [{ label: "Option 1" }]
   };
 
-  props.survey.questions = [...props.survey.questions, initial];
+  const temp = [...questions, initial];
+  Object.assign(questions, temp);
 };
 
-const handleUpdateQuestion = (index: number, question: IQuestion) => {
-  props.survey.questions[index] = question;
-};
+watch(questions, (value) => {
+  if (!(props.isAdmin && !props.preview)) {
+    emit( "update:responses", value.map((question: any) => question.response) );
+  } else {
+    emit("update:question", value);
+  }
+});
 
 const handleRemoveQuestion = (index: number) => {
-  props.survey.questions.splice(index, 1);
-};
-
-const handleDescriptionChange = (value: string): void => {
-  props.survey.survey_description = value;
-};
-
-const handleTitleChange = (value: string): void => {
-  props.survey.survey_name = value;
-};
-
-const handleConfigChange = (value: boolean): void => {
-  props.survey.is_active = value;
+  questions.splice(index, 1);
 };
 </script>
 

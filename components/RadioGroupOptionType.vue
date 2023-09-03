@@ -1,5 +1,5 @@
 <template>
-  <v-radio-group @input="($event) => $emit('response', $event.target.value)">
+  <v-radio-group @input="($event) => $emit('update:response', $event.target.value)">
     <v-radio
       v-for="option in options"
       :ref="option.label"
@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { IOptionsProps } from "../interfaces/IOptionTypes";
 defineProps<IOptionsProps>();
-defineEmits(["response"]);
+defineEmits(["update:response"]);
 </script>
 
 <style scoped></style>

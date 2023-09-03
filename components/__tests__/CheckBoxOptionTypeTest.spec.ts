@@ -78,6 +78,6 @@ describe('CheckBoxOptionType component', () => {
     await wrapper.vm.$nextTick()
 
     // Assert that the emitted response matches the IDs of selected options
-    expect(wrapper.emitted().response).toEqual([[[options[0].id]], [[options[0].id, options[1].id]]])
+    expect(wrapper.emitted()['update:response']).toEqual([[[options[0].id]], [[options[0].id, options[1].id]]])
   })
 })

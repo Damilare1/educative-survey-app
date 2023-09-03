@@ -3,8 +3,8 @@
   <v-container v-if="!submitted && !surveyLoading && !inputTypesLoading && !error && survey.is_active">
     <QuestionsContainer
       :survey="survey"
-      @update:response="handleResponse"
       :input-types="inputTypes"
+      v-model:responses="responses"
     />
     <v-container>
       <v-row justify="space-around">
@@ -57,7 +57,7 @@ const submitted = ref(false);
 const { $getSurvey, $createResponse, $getSurveyInputTypes } = useNuxtApp();
 const { id } = route.params;
 const survey: UnwrapNestedRefs<ISurvey> = reactive({});
-const response: any = {};
+const responses: any = ref({});
 const flag = reactive({
   message: "",
   show: false,
@@ -96,36 +96,15 @@ const {
   data: inputTypes, pending: inputTypesLoading
 } = await $getSurveyInputTypes();
 
-const handleResponse = (value: any) => {
-  Object.assign(response, value)
-};
-
 const submitResponse = async () => {
-  const payload = []
-  /**
-   * Construct response array
-   * Each response is of the form {question_id: string, survey_id: string, option_id: string}
-   * For checkbox items, the selected options fill individual array objects, i.e same question and survey id, different option id.
-   */
-  for (const [key, value] of Object.entries(response)) {
-    const response = {}
-    response.question_id = key
-    response.survey_id = id
-    if(Array.isArray(value)) {
-      value.forEach((item) => {
-        payload.push({...response, option_id: item})
-      })
-      continue;
-    }
-    response.option_id = value
-    payload.push(response)
-  }
-  const { error } = await $createResponse({ body: {responses: payload} });
+   console.log(responses.value)
+  
+  // const { error } = await $createResponse({ body: {responses: responses.value} });
   if (error.value) {
     setFlag("Error submitting response, please try again later", 10000, "error");
     return;
   }
-  submitted.value = true;
+  // submitted.value = true;
 };
 
 // eslint-disable-next-line no-undef

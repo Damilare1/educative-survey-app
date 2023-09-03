@@ -1,16 +1,16 @@
 <template>
-   <component :is="selectedOption"  :options="options" @response="(value) => $emit('response', value)" />
+   <component :is="selectedOption"  :options="options" v-model="response" />
 </template>
 
 <script setup lang="ts" >
-import { resolveComponent, computed } from "vue";
+import { resolveComponent, computed, ref } from "vue";
 import { QuestionInputTypesEnum } from "../enums/QuestionInputTypes.enums"
 import { IOptionTypeProps } from "../interfaces/IOptionTypes"
 const checkBox = resolveComponent("CheckBoxOptionType");
 const radioGroup = resolveComponent("RadioGroupOptionType");
-
+const response = ref("");
 const props = defineProps<IOptionTypeProps>();
-defineEmits(['response'])
+const emits = defineEmits(['update:response'])
 const components = {
   [QuestionInputTypesEnum.CHECKBOX]: checkBox,
   [QuestionInputTypesEnum.MULTIPLE_CHOICE]: radioGroup
@@ -23,6 +23,9 @@ const selectedOption = computed(() => {
   return components[component];
 })
 
+watch (response, (value) => {
+  emits("update:response", value)
+})
 
 </script>
 

@@ -18,6 +18,7 @@
       :survey="survey"
       :preview="preview"
       :input-types="inputTypes"
+      v-model:question="survey.questions"
     />
   </v-container>
   <v-container

@@ -27,7 +27,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useModals } from '~/composables/useModals'
+import { useModals } from '../composables/useModals'
 
 const { data: { payload: { text, action } }, toggleDialog } = useModals()
 const emit = defineEmits(['closeDialog'])

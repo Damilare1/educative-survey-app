@@ -14,9 +14,9 @@ import { ref, watch, toRaw } from 'vue'
 import { IOptionsProps } from "../interfaces/IOptionTypes";
 const selectedItems = ref([])
 defineProps<IOptionsProps>();
-const emit = defineEmits(["response"]);
+const emit = defineEmits(["update:response"]);
 watch(selectedItems, ()=> {
-  emit("response", toRaw(selectedItems.value))
+  emit("update:response", toRaw(selectedItems.value))
 })
 </script>
 

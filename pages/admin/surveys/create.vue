@@ -13,7 +13,13 @@
         <v-btn @click="handleCreateSurvey"> Create Survey </v-btn>
       </NuxtLayout>
     </v-container>
-    <QuestionsContainer :is-admin="true" :survey="survey" :preview="preview" :input-types="inputTypes"/>
+    <QuestionsContainer
+      :is-admin="true"
+      :survey="survey"
+      :preview="preview"
+      :input-types="inputTypes"
+      v-model:question="survey.questions"
+    />
   </v-container>
   <v-snackbar :color="flag.color" :timeout="flag.timeout" v-model="flag.show">
     {{ flag.message }}
@@ -24,7 +30,6 @@
 import { UnwrapNestedRefs } from "vue";
 import { reactive, ref } from "vue";
 import { ISurvey } from "../../../interfaces/ISurvey";
-
 
 defineProps({
   isAdmin: Boolean,
@@ -61,7 +66,11 @@ const survey: UnwrapNestedRefs<ISurvey> = reactive({
 });
 
 const preview = ref(false);
-const { data: { value: inputTypes }, pending, error } = await $getSurveyInputTypes()
+const {
+  data: { value: inputTypes },
+  pending,
+  error,
+} = await $getSurveyInputTypes();
 
 const handleCreateSurvey = async (): void => {
   setFlag("Creating survey", 1000, "blue-grey");

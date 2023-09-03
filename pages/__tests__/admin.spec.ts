@@ -1,3 +1,5 @@
+// @vitest-environment nuxt
+
 import { mountSuspended, registerEndpoint } from 'nuxt-vitest/utils'
 import { describe, expect, test } from 'vitest'
 import { adminSurveys } from './mocks/admin'

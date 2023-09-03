@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/strict-boolean-expressions */
 
 import { type AsyncData } from 'nuxt/app'
-import { useAuthState } from '~/composables/useAuthState'
+import { useAuthState } from '../composables/useAuthState'
 const JWT_LS_TOKEN = 'survey_jwt'
 
 export default defineNuxtPlugin((nuxtApp) => {

@@ -20,8 +20,8 @@ export default defineEventHandler(async (event) => {
     return user
   } catch (e) {
     const error = {
-      statusCode: 500,
-      statusMessage: 'Internal server error',
+      statusCode: e?.statusCode ?? 500,
+      statusMessage: e?.statusMessage ?? 'Internal server error',
       data: e.data?.message ?? null
     }
     if (e instanceof ZodError) {

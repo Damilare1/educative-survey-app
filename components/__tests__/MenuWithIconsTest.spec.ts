@@ -92,6 +92,6 @@ describe('Menu with icons component', () => {
     await wrapper.vm.$nextTick()
 
     // Assert that the emitted event 'itemSelected' contains the expected IDs
-    expect(wrapper.emitted().itemSelected).toEqual([[items[0].id], [items[1].id]])
+    expect(wrapper.emitted()['update:selected']).toEqual([[items[0].id], [items[1].id]])
   })
 })

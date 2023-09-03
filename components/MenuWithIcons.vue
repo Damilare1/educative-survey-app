@@ -32,7 +32,7 @@ import {
 } from "../interfaces/IMenuWithIconsOptions";
 
 const props = defineProps<IMenuWithIconsOptions>();
-const emit = defineEmits(["itemSelected"]);
+const emit = defineEmits(["update:selected"]);
 
 const selectedItem = computed(() => {
   if(props.items) {
@@ -41,7 +41,7 @@ const selectedItem = computed(() => {
   return null
 })
 const handleItemClick = (item: IMenuItem) => {
-  emit("itemSelected", item.id);
+  emit("update:selected", item.id);
 };
 </script>
 
