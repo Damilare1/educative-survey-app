@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="!pending && !error">
+  <v-container v-if="!surveyPending && !inputTypesPending && !error">
     <v-container>
       <NuxtLayout name="surveycard">
         <v-switch
@@ -13,10 +13,15 @@
         <v-btn @click="handleUpdateSurvey"> Update Survey </v-btn>
       </NuxtLayout>
     </v-container>
-    <QuestionsContainer :is-admin="true" :survey="survey" :preview="preview" />
+    <QuestionsContainer
+      :is-admin="true"
+      :survey="survey"
+      :preview="preview"
+      :input-types="inputTypes"
+    />
   </v-container>
   <v-container
-    v-if="!pending && error"
+    v-if="!surveyPending && !inputTypesPending && error"
     class="d-flex flex-column justify-center align-center"
   >
     <v-icon class="large-icon" icon="mdi-file-document-alert"></v-icon>
@@ -25,12 +30,14 @@
   <v-snackbar :color="flag.color" :timeout="flag.timeout" v-model="flag.show">
     {{ flag.message }}
   </v-snackbar>
+  <v-container v-if="surveyPending || inputTypesPending">
+    <v-progress-linear indeterminate></v-progress-linear>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import { UnwrapNestedRefs, reactive, ref } from "vue";
-import { IQuestion } from "~/interfaces/IQuestionOptionProps";
-import { ISurvey } from "~/interfaces/ISurvey";
+import { UnwrapNestedRefs, reactive, ref, onMounted, nextTick } from "vue";
+import { ISurvey } from "../../../../interfaces/ISurvey";
 defineProps({
   isAdmin: Boolean,
 });
@@ -54,12 +61,8 @@ const setFlag = (
   flag.color = color;
 };
 const { id } = useRoute().params;
-const { $getAdminSurveyById, $updateSurvey } = useNuxtApp();
-const initial: IQuestion = {
-  question: "Untitled Question",
-  input_type_id: 1,
-  options: [{ label: "Option 1" }],
-};
+const { $getAdminSurveyById, $updateSurvey, $getSurveyInputTypes } =
+  useNuxtApp();
 
 const survey: UnwrapNestedRefs<ISurvey> = reactive({
   id: null,
@@ -69,31 +72,40 @@ const survey: UnwrapNestedRefs<ISurvey> = reactive({
   start_date: null,
   end_date: null,
   admin_id: null,
-  questions: [initial],
+  questions: [],
 });
 
-const {
-  data,
-  error,
-  pending,
-  execute: fetchSurvey,
-} = await $getAdminSurveyById(id, {
-  key: "fetchSurvey",
-});
+const surveyPending = ref(true);
+const inputTypesPending = ref(true);
+const inputTypes = ref([]);
+const error = ref(null);
 
-watchEffect(() => {
-  if (!pending.value && error.value) {
+const fetchSurvey = async () => {
+  const surveyResult = await $getAdminSurveyById(id);
+  if (surveyResult.error.value) {
+    error.value = surveyResult.error.value;
     setFlag(
       "Error fetching survey, please confirm the survey exists",
       10000,
       "error"
     );
+  } else {
+    Object.assign(survey, surveyResult.data.value);
   }
-  if (!pending.value && data.value) {
-    const { value: response } = data;
-    response.is_active = !!response.is_active;
-    Object.assign(survey, response);
-  }
+  surveyPending.value = false
+};
+
+const fetchInputTypes = async () => {
+  const surveyInputTypesResult = await $getSurveyInputTypes();
+  inputTypes.value = surveyInputTypesResult.data.value;
+  inputTypesPending.value = false;
+};
+
+onMounted(() => {
+  nextTick(async () => {
+    await fetchSurvey();
+    await fetchInputTypes();
+  });
 });
 
 const preview = ref(false);

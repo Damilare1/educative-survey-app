@@ -3,10 +3,10 @@
     size="x-large"
     variant="flat"
     class="text-none text-subtitle-1"
-    :prepend-icon="selectedItem.icon"
+    :prepend-icon="selectedItem?.icon"
     append-icon="mdi-menu-down"
   >
-    {{ selectedItem.label }}
+    {{ selectedItem?.label }}
 
     <v-menu activator="parent">
       <v-list>
@@ -25,25 +25,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed } from "vue";
 import {
   IMenuWithIconsOptions,
   IMenuItem,
-} from "~/interfaces/IMenuWithIconsOptions";
+} from "../interfaces/IMenuWithIconsOptions";
 
 const props = defineProps<IMenuWithIconsOptions>();
 const emit = defineEmits(["itemSelected"]);
 
-const selectedFromProps = (() => {
-  if (!props.selected) return props.items[0];
-  return props.items.filter((item) => item.label === props.selected)[0];
-})();
-
-const selectedItem = ref(selectedFromProps)
-
+const selectedItem = computed(() => {
+  if(props.items) {
+    return props.items.filter((item) => item.id === props.selectedItemId)[0] ?? props.items[0]
+  }
+  return null
+})
 const handleItemClick = (item: IMenuItem) => {
-  selectedItem.value = item;
-  emit("itemSelected", item.label);
+  emit("itemSelected", item.id);
 };
 </script>
 

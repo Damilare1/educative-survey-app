@@ -1,11 +1,12 @@
 export interface IOptions {
   label: string
-  id?: number
+  id?: string
 }
 export interface IOptionsProps {
   options: IOptions[]
 }
 export interface IOptionTypeProps {
   optionType: string
+  optionTypes: any[]
   options: IOptions[]
 }

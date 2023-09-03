@@ -1,17 +1,23 @@
 <template>
   <v-checkbox
     v-for="option in options"
+    :ref="option.label"
+    v-model="selectedItems"
     :label="option.label"
     :value="option.id"
-    @input="($event) => $emit('response', $event.target.value)"
     hide-details
   ></v-checkbox>
 </template>
 
 <script setup lang="ts">
-import { IOptionsProps } from "~/interfaces/IOptionTypes";
+import { ref, watch, toRaw } from 'vue'
+import { IOptionsProps } from "../interfaces/IOptionTypes";
+const selectedItems = ref([])
 defineProps<IOptionsProps>();
-defineEmits(["response"]);
+const emit = defineEmits(["response"]);
+watch(selectedItems, ()=> {
+  emit("response", toRaw(selectedItems.value))
+})
 </script>
 
 <style scoped></style>

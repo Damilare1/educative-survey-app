@@ -13,7 +13,7 @@
         <v-btn @click="handleCreateSurvey"> Create Survey </v-btn>
       </NuxtLayout>
     </v-container>
-    <QuestionsContainer :is-admin="true" :survey="survey" :preview="preview" />
+    <QuestionsContainer :is-admin="true" :survey="survey" :preview="preview" :input-types="inputTypes"/>
   </v-container>
   <v-snackbar :color="flag.color" :timeout="flag.timeout" v-model="flag.show">
     {{ flag.message }}
@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { UnwrapNestedRefs } from "vue";
 import { reactive, ref } from "vue";
-import { IQuestion } from "~/interfaces/IQuestionOptionProps";
-import { ISurvey } from "~/interfaces/ISurvey";
+import { ISurvey } from "../../../interfaces/ISurvey";
+
 
 defineProps({
   isAdmin: Boolean,
@@ -49,12 +49,7 @@ const setFlag = (
   flag.color = color;
 };
 
-const { $createSurvey } = useNuxtApp();
-const initial: IQuestion = {
-  question: "Untitled Question",
-  input_type_id: 1,
-  options: [{ label: "Option 1" }],
-};
+const { $createSurvey, $getSurveyInputTypes } = useNuxtApp();
 
 const survey: UnwrapNestedRefs<ISurvey> = reactive({
   survey_name: "New Survey",
@@ -62,14 +57,15 @@ const survey: UnwrapNestedRefs<ISurvey> = reactive({
   is_active: false,
   start_date: null,
   end_date: null,
-  questions: [initial],
+  questions: [],
 });
 
 const preview = ref(false);
+const { data: { value: inputTypes }, pending, error } = await $getSurveyInputTypes()
 
 const handleCreateSurvey = async (): void => {
   setFlag("Creating survey", 1000, "blue-grey");
-  const { pending, error } = await $createSurvey({
+  await $createSurvey({
     body: toRaw(survey),
   });
   if (!pending.value && error.value) {

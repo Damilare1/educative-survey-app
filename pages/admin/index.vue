@@ -8,7 +8,7 @@
         v-for="survey in surveys"
         :title="survey.survey_name"
         :description="survey.survey_description"
-        :author="survey.author.username"
+        :author="survey?.author?.username"
         :is-admin="true"
         :id="survey.id"
         :key="survey.id"
@@ -30,15 +30,26 @@
   </NuxtLayout>
 </template>
 <script setup>
+import { onMounted, nextTick, ref, reactive } from 'vue'
 const { $getAdminSurveys, $deleteSurvey, $updateSurvey } = useNuxtApp()
-const modalCtrl = useModals()
+let result = reactive({})
 
-const {
-  error,
-  data: surveys,
-  pending,
-  refresh: fetchSurveys
-} = await $getAdminSurveys()
+const modalCtrl = useModals()
+const surveys = ref([])
+const error = ref()
+const pending = ref(false)
+const fetchSurveys = async () => {
+  result = await $getAdminSurveys()
+  surveys.value = result.data.value
+  error.value = result.error.value
+  pending.value = result.pending.value
+}
+
+onMounted(async () => {
+  nextTick(async () => {
+    await fetchSurveys()
+  })
+})
 
 const handleDeleteSurvey = async (id) => {
   await $deleteSurvey(id)
@@ -47,7 +58,7 @@ const handleDeleteSurvey = async (id) => {
 }
 
 const handleUpdateSurveyTitle = async (id, title) => {
-  await $updateSurvey(id, { survey_name: title })
+  await $updateSurvey(id, { body: { survey_name: title } })
   await fetchSurveys()
   modalCtrl.toggleDialog()
 }

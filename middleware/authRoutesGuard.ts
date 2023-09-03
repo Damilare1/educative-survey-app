@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware(async (from, to) => {
+  const authState = useAuthState()
   const { $userIsLoggedIn } = useNuxtApp()
-  const { pending, error } = await $userIsLoggedIn()
-
-  if (!pending.value && !error.value) {
-    return await navigateTo('/')
+  if (process.server) await $userIsLoggedIn()
+  if (authState.value.isAuthenticated) {
+    return navigateTo('/')
   }
 })

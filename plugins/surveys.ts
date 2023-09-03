@@ -7,6 +7,12 @@ export default defineNuxtPlugin((nuxtApp) => {
           lazy: true
         })
       },
+      getSurveyInputTypes: async (id: number, options: any = {}) => {
+        return await useFetch('/api/survey_input_types', {
+          ...options,
+          lazy: true
+        })
+      },
       getAdminSurveys: async (options: any = {}) => {
         return await nuxtApp.$authFetch('/api/admin/surveys', options)
       },
@@ -20,19 +26,19 @@ export default defineNuxtPlugin((nuxtApp) => {
         })
       },
       deleteSurvey: async (id: number, options: any = {}) => {
-        return await nuxtApp.$authFetch(`/api/admin/surveys/${id}`, {
+        return nuxtApp.$authFetch(`/api/admin/surveys/${id}`, {
           ...options,
           method: 'DELETE'
         })
       },
       updateSurvey: async (id: number, options: any = {}) => {
-        return await nuxtApp.$authFetch(`/api/admin/surveys/${id}`, {
+        return nuxtApp.$authFetch(`/api/admin/surveys/${id}`, {
           ...options,
           method: 'PUT'
         })
       },
       createSurvey: async (options: any) => {
-        return await nuxtApp.$authFetch('/api/admin/surveys/create', {
+        return nuxtApp.$authFetch('/api/admin/surveys/create', {
           ...options,
           method: 'POST'
         })

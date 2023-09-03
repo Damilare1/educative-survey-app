@@ -9,7 +9,7 @@
       <v-container class="w-50 mt-5">
         <v-row justify="space-around">
           <v-btn to="/admin">Create a Survey</v-btn>
-          <v-btn to="/surveys">Take a Survey</v-btn>
+          <v-btn to="/survey">Take a Survey</v-btn>
         </v-row>
       </v-container>
     </v-container>

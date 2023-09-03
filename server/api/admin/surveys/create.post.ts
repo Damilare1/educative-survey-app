@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     questions: z
       .object({
         question: z.string().optional(),
-        input_type_id: z.number().optional(),
+        input_type_id: z.string().optional(),
         options: z
           .object({
             label: z.string().optional()

@@ -21,7 +21,7 @@ interface ISurveyChartProps {
 const data = defineProps<ISurveyChartProps>();
 
 const config = computed(() => {
-  const { options } = toRaw(data.response);
+  const options = toRaw(data.response.options);
   const configOptions = {
     data: {
       labels: options.map((x: any) => x.label),

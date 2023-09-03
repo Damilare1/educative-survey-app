@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
       .object({
         id: z.string().optional(),
         question: z.string().optional(),
-        input_type_id: z.number().optional(),
+        input_type_id: z.string().optional(),
         admin_id: z.string().optional(),
         survey_id: z.string().optional(),
         options: z

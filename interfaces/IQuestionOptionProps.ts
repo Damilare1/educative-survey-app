@@ -1,4 +1,5 @@
 import { type IOptions } from './IOptionTypes'
+
 export interface IQuestion {
   id?: number
   question: string
@@ -11,4 +12,5 @@ export interface IQuestionOptionProps {
   isAdmin: boolean
   preview: boolean
   index: number
+  inputOptionTypes: any[]
 }

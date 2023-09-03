@@ -17,6 +17,12 @@
               title="New Survey"
               to="/admin/surveys/create"
             ></v-list-item>
+            <v-list-item
+              active-class="bg-grey-darken-3"
+              prepend-icon="mdi-cog-outline"
+              title="Account settings"
+              to="/admin/manage"
+            ></v-list-item>
           </v-list>
         </v-navigation-drawer>
         <v-main class="" style="min-height: 100%">

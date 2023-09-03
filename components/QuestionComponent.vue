@@ -6,17 +6,18 @@
           <v-text-field
             class="v-col-sm-8 pa-0 mr-4"
             hide-details="auto"
-            v-model="question.question"
+            v-model="questionData.question"
           ></v-text-field>
           <MenuWithIcons
-            :items="optionTypeList"
-            @item-selected="handleOptionSelect"
-            :selected="selectedOption"
+            :items="inputOptionTypes"
+            @item-selected="handleInputTypeSelect"
+            :selected-item-id="questionData.input_type_id"
           />
         </v-row>
         <OptionPreview
-          :option-type="selectedOption"
-          :options="question.options"
+          :option-type="questionData.input_type_id"
+          :option-types="inputOptionTypes"
+          :options="questionData.options"
           :question-index="index"
         />
         <v-row class="position-absolute mr-4" style="right: 0; bottom: 1.5rem">
@@ -28,10 +29,11 @@
         </v-row>
       </template>
       <template v-else>
-        <p class="text-h6 mb-4">{{ question.question }}</p>
+        <p class="text-h6 mb-4">{{ questionData.question }}</p>
         <QuestionOptionsComponent
-          :option-type="selectedOption"
-          :options="question.options"
+          :option-type="questionData.input_type_id"
+          :option-types="inputOptionTypes"
+          :options="questionData.options"
           @response="(value) => $emit('update:responses', value)"
         />
       </template>
@@ -40,28 +42,31 @@
 </template>
 
 <script setup lang="ts">
-import { QuestionOptionsEnum } from "~/enums/QuestionOptions.enums";
-import { ref } from "vue";
-import { IQuestionOptionProps } from "~/interfaces/IQuestionOptionProps";
+import { reactive } from "vue";
+import { IQuestion, IQuestionOptionProps } from "../interfaces/IQuestionOptionProps";
 
 const props = defineProps<IQuestionOptionProps>();
-defineEmits(['deleteQuestion', 'update:responses'])
-const optionTypeList = [
-  {
-    label: QuestionOptionsEnum.MULTIPLE_CHOICE,
-    icon: "mdi-radiobox-marked",
-  },
-  {
-    label: QuestionOptionsEnum.CHECKBOX,
-    icon: "mdi-checkbox-outline",
-  },
-];
+const emit = defineEmits(['deleteQuestion', 'update:responses', 'update:question'])
+const selectedInputType = computed(() => {
+  if(props.inputOptionTypes && props.question.input_type_id) {
+    return props.inputOptionTypes?.filter((type) => type.id === props.question.input_type_id)[0] ?? props?.inputOptionTypes[0] ?? ""
+  }
+  return null
+})
 
-const selectedOption = ref(optionTypeList[0].label);
+const questionData: IQuestion  = reactive({
+  question: props.question.question,
+  input_type_id: selectedInputType?.value?.id,
+  options: props.question.options,
+})
 
-const handleOptionSelect = (option: QuestionOptionsEnum) => {
-  selectedOption.value = option;
+const handleInputTypeSelect = (input: string) => {
+  questionData.input_type_id = input;
 };
+
+watch(questionData, () => {
+  emit("update:question", questionData)
+})
 
 </script>
 

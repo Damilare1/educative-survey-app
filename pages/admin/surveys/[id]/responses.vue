@@ -3,7 +3,6 @@
   <NuxtLayout name="surveycard" v-if="!pending && !error && responses">
     <v-container>
       <h3 class="text-h3 mb-6">{{ responses.survey_name }}</h3>
-      <h6 class="text-h6">{{ `Responses: ${responses.count}` }}</h6>
     </v-container>
   </NuxtLayout>
   <ClientOnly>
@@ -16,18 +15,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-const { id } = useRoute().params;
+import { ref, onMounted, nextTick } from 'vue'
+import { useRoute, useNuxtApp } from 'nuxt/app'
 
-const { $getResponse } = useNuxtApp();
+const { id } = useRoute().params
 
-const { error, pending, data } = await $getResponse(id);
-const responses: Ref<any> = ref({});
-watchEffect(() => {
-  if (!pending.value && !error.value) {
-    responses.value = data.value;
-  }
-});
+const { $getResponse } = useNuxtApp()
+
+const pending = ref(true)
+const error = ref(null)
+const responses = ref({})
+
+onMounted(() => {
+  nextTick(async () => {
+    const result = await $getResponse(id)
+    responses.value = result.data.value
+    error.value = result.error.value
+    pending.value = result.pending.value
+  })
+})
 </script>
 
 <style scoped></style>

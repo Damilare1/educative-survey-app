@@ -1,8 +1,8 @@
-import { type QuestionOptionsEnum } from '~/enums/QuestionOptions.enums'
 import { type IOptions } from './IOptionTypes'
 
 export interface IMultipleChoiceOptionPreview {
-  optionType: QuestionOptionsEnum
+  optionType: string
+  optionTypes: any[]
   options: IOptions[]
   questionIndex: number
 }

@@ -1,17 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // hooks: {
-  //   'pages:extend' (pages) {
-  //     // add a route
-  //     pages.push({
-  //       name: 'profile',
-  //       path: '/profile',
-  //       file: '~/pages/admin'
-  //     })
-  //   }
-  // },
-
   ssr: true, // Enable server-side rendering
+  modules: ['nuxt-vitest'],
   css: [
     'vuetify/lib/styles/main.sass',
     '@mdi/font/css/materialdesignicons.min.css'
@@ -65,6 +55,13 @@ export default defineNuxtConfig({
   devServer: {
     host: '0.0.0.0',
     port: 8080
+  },
+  $test: {
+    runtimeConfig: {
+      public: {
+        apiBase: ''
+      }
+    }
   },
   runtimeConfig: {
     surveyApiUrl: process.env.SURVEY_API_URL

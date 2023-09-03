@@ -41,10 +41,10 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { ISurveyCardProps } from "~/interfaces/ISurveyCardProps";
-import { ISurveyCardMenu } from "~/interfaces/ISurveyCardMenu";
-import { useModals } from "~/composables/useModals";
-import { ModalsEnum } from "~/enums/Modals.enums";
+import { ISurveyCardProps } from "../interfaces/ISurveyCardProps";
+import { ISurveyCardMenu } from "../interfaces/ISurveyCardMenu";
+import { useModals } from "../composables/useModals";
+import { ModalsEnum } from "../enums/Modals.enums";
 
 const modalCtrl = useModals();
 const emit = defineEmits(["handleDelete", "handleUpdateTitle"]);

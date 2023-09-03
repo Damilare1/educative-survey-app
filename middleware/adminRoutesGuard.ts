@@ -1,7 +1,10 @@
-export default defineNuxtRouteMiddleware(async (from, to) => {
+import { useAuthState } from '../composables/useAuthState'
+
+export default defineNuxtRouteMiddleware(async () => {
+  const authState = useAuthState()
   const { $userIsLoggedIn } = useNuxtApp()
-  const { error, pending } = await $userIsLoggedIn()
-  if (!pending.value && error.value) {
-    return await navigateTo('/login')
+  if (process.server) await $userIsLoggedIn()
+  if (!authState.value.isAuthenticated) {
+    return navigateTo('/login')
   }
 })

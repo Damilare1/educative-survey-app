@@ -1,10 +1,10 @@
-import { type QuestionOptionsEnum } from '~/enums/QuestionOptions.enums'
 export interface IMenuItem {
   label: string
   icon: string
+  id: string
 }
 
 export interface IMenuWithIconsOptions {
   items: IMenuItem[]
-  selected: QuestionOptionsEnum
+  selectedItemId: string
 }

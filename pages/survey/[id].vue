@@ -1,38 +1,43 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <v-container v-if="!submitted && !pending && !error && survey.is_active">
-    <QuestionsContainer :survey="survey" @update:response="handleResponse" />
-    <v-container v-if="!isAdmin">
+  <v-container v-if="!submitted && !surveyLoading && !inputTypesLoading && !error && survey.is_active">
+    <QuestionsContainer
+      :survey="survey"
+      @update:response="handleResponse"
+      :input-types="inputTypes"
+    />
+    <v-container>
       <v-row justify="space-around">
         <v-tooltip text="Submit" location="top">
           <template v-slot:activator="{ props }">
-            <v-btn @click="submitResponse" v-bind="props"
-              >Submit Response</v-btn
-            >
+            <v-btn @click="submitResponse" v-bind="props">Submit Response</v-btn>
           </template>
         </v-tooltip>
       </v-row>
     </v-container>
   </v-container>
-  <NuxtLayout name="surveycard" v-if="!pending && (error || !survey.is_active)">
-    <v-container
-      class="d-flex flex-column justify-center align-center"
-    >
+  <NuxtLayout name="surveycard" v-if="!surveyLoading && !inputTypesLoading && (error || !survey.is_active)">
+    <v-container class="d-flex flex-column justify-center align-center">
       <v-icon class="large-icon" icon="mdi-file-document-alert"></v-icon>
-      <h4 class="text-h4 text-center mt-4">{{ error ? "Error loading survey" : "The requested survey is not accepting responses at this time"}}</h4>
+      <h4 class="text-h4 text-center mt-4">
+        {{
+          error
+            ? "Error loading survey"
+            : "The requested survey is not accepting responses at this time"
+        }}
+      </h4>
     </v-container>
   </NuxtLayout>
 
-  <v-container v-if="pending">
-    <h4 class="text-h4">Loading</h4>
+  <v-container v-if="surveyLoading || inputTypesLoading">
+    <v-progress-linear indeterminate></v-progress-linear>
   </v-container>
-  <NuxtLayout name="surveycard" v-if="submitted && !pending && !error">
-    <v-container
-      class="d-flex flex-column justify-center align-center"
-    >
+  <NuxtLayout name="surveycard" v-if="submitted && !surveyLoading && !inputTypesLoading && !error">
+    <v-container class="d-flex flex-column justify-center align-center">
       <v-icon class="large-icon" icon="mdi-check"></v-icon>
       <h4 class="text-h4 text-center mt-4">
-        Thank you for taking part in the survey, your response has been successfully submitted
+        Thank you for taking part in the survey, your response has been successfully
+        submitted
       </h4>
     </v-container>
   </NuxtLayout>
@@ -43,13 +48,13 @@
 
 <script setup lang="ts">
 import { UnwrapNestedRefs, reactive, ref } from "vue";
-import { ISurvey } from "~/interfaces/ISurvey";
+import { ISurvey } from "../../interfaces/ISurvey";
 
 const route = useRoute();
-const submitted = ref(false)
+const submitted = ref(false);
 
 // eslint-disable-next-line no-undef
-const { $getSurvey, $createResponse } = useNuxtApp();
+const { $getSurvey, $createResponse, $getSurveyInputTypes } = useNuxtApp();
 const { id } = route.params;
 const survey: UnwrapNestedRefs<ISurvey> = reactive({});
 const response: any = {};
@@ -72,45 +77,55 @@ const setFlag = (
   flag.color = color;
 };
 
-const { error, data, pending } = await $getSurvey(id, {
+const { error, data, pending: surveyLoading } = await $getSurvey(id, {
   key: "fetchSurvey",
 });
 
 watchEffect(() => {
-  if (!pending.value && error.value) {
-    setFlag(
-      "Error fetching survey, please confirm the survey exists",
-      10000,
-      "error"
-    );
+  if (!surveyLoading.value && error.value) {
+    setFlag("Error fetching survey, please confirm the survey exists", 10000, "error");
   }
-  if (!pending.value && data.value) {
+  if (!surveyLoading.value && data.value) {
     const { value: response } = data;
     response.is_active = !!response.is_active;
     Object.assign(survey, response);
   }
 });
 
-const handleResponse = (option_id: number, question_id: number) => {
-  response[question_id] = {
-    question_id,
-    option_id: option_id,
-    survey_id: id,
-  };
+const {
+  data: inputTypes, pending: inputTypesLoading
+} = await $getSurveyInputTypes();
+
+const handleResponse = (value: any) => {
+  Object.assign(response, value)
 };
 
 const submitResponse = async () => {
-  const payload = { responses: Object.values(response) };
-  const { error, data } = await $createResponse({ body: payload });
+  const payload = []
+  /**
+   * Construct response array
+   * Each response is of the form {question_id: string, survey_id: string, option_id: string}
+   * For checkbox items, the selected options fill individual array objects, i.e same question and survey id, different option id.
+   */
+  for (const [key, value] of Object.entries(response)) {
+    const response = {}
+    response.question_id = key
+    response.survey_id = id
+    if(Array.isArray(value)) {
+      value.forEach((item) => {
+        payload.push({...response, option_id: item})
+      })
+      continue;
+    }
+    response.option_id = value
+    payload.push(response)
+  }
+  const { error } = await $createResponse({ body: {responses: payload} });
   if (error.value) {
-    setFlag(
-      "Error submitting response, please try again later",
-      10000,
-      "error"
-    );
+    setFlag("Error submitting response, please try again later", 10000, "error");
     return;
   }
-  submitted.value = true
+  submitted.value = true;
 };
 
 // eslint-disable-next-line no-undef

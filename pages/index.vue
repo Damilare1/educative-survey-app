@@ -10,7 +10,7 @@
         <v-row justify="space-around">
           <ClientOnly fallback-tag="p" fallback="Loading Buttons">
             <v-btn to="/admin">Create a Survey</v-btn>
-            <v-btn to="/surveys">Take a Survey</v-btn>
+            <v-btn to="/survey">Take a Survey</v-btn>
           </ClientOnly>
         </v-row>
       </v-container>
